@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { ContentItem, ContentFormat, ContentStatus } from "@/types/content";
+import { ContentItem } from "@/types/content";
 
 const STORAGE_KEY = "linea-content-planner";
 
@@ -31,9 +31,10 @@ export function useContentData() {
       tema: "",
       formato: "Post estático",
       responsavel: "",
+      plataforma: "Instagram",
       dataCaptacao: "",
       dataPublicacao: "",
-      status: "Em andamento",
+      status: "Pauta definida",
       observacoes: "",
     };
     persist([...items, newItem]);

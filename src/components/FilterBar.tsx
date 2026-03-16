@@ -1,13 +1,9 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { STATUS_OPTIONS, FORMAT_OPTIONS } from "@/types/content";
+import { STATUS_GROUPS, FORMAT_OPTIONS, PLATFORM_OPTIONS } from "@/types/content";
 
 interface FilterBarProps {
   search: string;
@@ -19,18 +15,17 @@ interface FilterBarProps {
   responsavelFilter: string;
   onResponsavelFilterChange: (v: string) => void;
   responsaveis: string[];
+  platformFilter: string;
+  onPlatformFilterChange: (v: string) => void;
 }
 
 export function FilterBar({
-  search,
-  onSearchChange,
-  statusFilter,
-  onStatusFilterChange,
-  formatFilter,
-  onFormatFilterChange,
-  responsavelFilter,
-  onResponsavelFilterChange,
+  search, onSearchChange,
+  statusFilter, onStatusFilterChange,
+  formatFilter, onFormatFilterChange,
+  responsavelFilter, onResponsavelFilterChange,
   responsaveis,
+  platformFilter, onPlatformFilterChange,
 }: FilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -44,13 +39,18 @@ export function FilterBar({
         />
       </div>
       <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-        <SelectTrigger className="w-[160px] bg-card">
+        <SelectTrigger className="w-[180px] bg-card">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[320px]">
           <SelectItem value="all">Todos os status</SelectItem>
-          {STATUS_OPTIONS.map((s) => (
-            <SelectItem key={s} value={s}>{s}</SelectItem>
+          {STATUS_GROUPS.map((group) => (
+            <SelectGroup key={group.stage}>
+              <SelectLabel className="text-xs font-bold uppercase tracking-wider">{group.stage}</SelectLabel>
+              {group.statuses.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectGroup>
           ))}
         </SelectContent>
       </Select>
@@ -62,6 +62,17 @@ export function FilterBar({
           <SelectItem value="all">Todos os formatos</SelectItem>
           {FORMAT_OPTIONS.map((f) => (
             <SelectItem key={f} value={f}>{f}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select value={platformFilter} onValueChange={onPlatformFilterChange}>
+        <SelectTrigger className="w-[160px] bg-card">
+          <SelectValue placeholder="Plataforma" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Todas plataformas</SelectItem>
+          {PLATFORM_OPTIONS.map((p) => (
+            <SelectItem key={p} value={p}>{p}</SelectItem>
           ))}
         </SelectContent>
       </Select>
