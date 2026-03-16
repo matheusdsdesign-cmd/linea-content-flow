@@ -15,6 +15,7 @@ const Index = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [formatFilter, setFormatFilter] = useState("all");
   const [responsavelFilter, setResponsavelFilter] = useState("all");
+  const [platformFilter, setPlatformFilter] = useState("all");
 
   const responsaveis = useMemo(() => {
     const set = new Set(items.map((i) => i.responsavel).filter(Boolean));
@@ -27,9 +28,10 @@ const Index = () => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
       if (formatFilter !== "all" && item.formato !== formatFilter) return false;
       if (responsavelFilter !== "all" && item.responsavel !== responsavelFilter) return false;
+      if (platformFilter !== "all" && item.plataforma !== platformFilter) return false;
       return true;
     });
-  }, [items, search, statusFilter, formatFilter, responsavelFilter]);
+  }, [items, search, statusFilter, formatFilter, responsavelFilter, platformFilter]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -53,6 +55,8 @@ const Index = () => {
                 responsavelFilter={responsavelFilter}
                 onResponsavelFilterChange={setResponsavelFilter}
                 responsaveis={responsaveis}
+                platformFilter={platformFilter}
+                onPlatformFilterChange={setPlatformFilter}
               />
             </div>
             <Button onClick={addItem} className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium gap-2">

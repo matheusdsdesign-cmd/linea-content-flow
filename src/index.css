@@ -33,6 +33,9 @@
     --warning: 28 97% 47%;
     --warning-foreground: 0 0% 100%;
 
+    --info: 200 70% 45%;
+    --info-foreground: 0 0% 100%;
+
     --delayed: 210 10% 60%;
     --delayed-foreground: 0 0% 100%;
 
@@ -71,32 +74,47 @@
 }
 
 @layer components {
-  .status-badge-em-andamento {
+  /* Status badges */
+  .status-badge-accent {
     @apply bg-accent text-accent-foreground;
   }
-  .status-badge-publicado {
+  .status-badge-success {
     @apply text-success-foreground;
     background-color: hsl(var(--success));
   }
-  .status-badge-adiado {
+  .status-badge-warning {
+    @apply bg-accent text-accent-foreground;
+  }
+  .status-badge-info {
+    @apply text-info-foreground;
+    background-color: hsl(var(--info));
+  }
+  .status-badge-delayed {
     @apply text-delayed-foreground;
     background-color: hsl(var(--delayed));
   }
-  .status-badge-cancelado {
+  .status-badge-cancelled {
     @apply text-cancelled-foreground;
     background-color: hsl(var(--cancelled));
   }
 
-  .row-indicator-em-andamento {
+  /* Row indicators */
+  .row-indicator-accent {
     border-left: 3px solid hsl(var(--accent));
   }
-  .row-indicator-publicado {
+  .row-indicator-success {
     border-left: 3px solid hsl(var(--success));
   }
-  .row-indicator-adiado {
+  .row-indicator-warning {
+    border-left: 3px solid hsl(var(--accent));
+  }
+  .row-indicator-info {
+    border-left: 3px solid hsl(var(--info));
+  }
+  .row-indicator-delayed {
     border-left: 3px solid hsl(var(--delayed));
   }
-  .row-indicator-cancelado {
+  .row-indicator-cancelled {
     border-left: 3px solid hsl(var(--cancelled));
   }
 }

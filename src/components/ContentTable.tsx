@@ -3,21 +3,19 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ContentItem, ContentStatus, ContentFormat, STATUS_OPTIONS, FORMAT_OPTIONS, statusClassMap, rowIndicatorMap } from "@/types/content";
+import {
+  ContentItem, ContentStatus, ContentFormat, ContentPlatform,
+  STATUS_GROUPS, FORMAT_OPTIONS, PLATFORM_OPTIONS, statusClassMap, rowIndicatorMap,
+} from "@/types/content";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 
 type SortField = "dataPublicacao" | "status" | null;
@@ -64,6 +62,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
             <TableHead className="w-[50px] text-center font-semibold">#</TableHead>
             <TableHead className="min-w-[180px] font-semibold">Tema</TableHead>
             <TableHead className="w-[140px] font-semibold">Formato</TableHead>
+            <TableHead className="w-[130px] font-semibold">Plataforma</TableHead>
             <TableHead className="w-[140px] font-semibold">Responsável</TableHead>
             <TableHead className="w-[140px] font-semibold">Data Captação</TableHead>
             <TableHead
@@ -73,7 +72,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
               <span className="flex items-center gap-1">Data Publicação <SortIcon field="dataPublicacao" /></span>
             </TableHead>
             <TableHead
-              className="w-[140px] font-semibold cursor-pointer select-none"
+              className="w-[180px] font-semibold cursor-pointer select-none"
               onClick={() => toggleSort("status")}
             >
               <span className="flex items-center gap-1">Status <SortIcon field="status" /></span>
@@ -85,7 +84,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
         <TableBody>
           {sorted.length === 0 && (
             <TableRow>
-              <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
+              <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
                 Nenhum conteúdo encontrado. Clique em "+ Novo conteúdo" para começar.
               </TableCell>
             </TableRow>
@@ -116,6 +115,18 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
                 </Select>
               </TableCell>
               <TableCell>
+                <Select value={item.plataforma} onValueChange={(v) => onUpdate(item.id, "plataforma", v)}>
+                  <SelectTrigger className="border-transparent bg-transparent hover:bg-secondary/50 h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLATFORM_OPTIONS.map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell>
                 <Input
                   value={item.responsavel}
                   onChange={(e) => onUpdate(item.id, "responsavel", e.target.value)}
@@ -132,20 +143,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
                 onChange={(v) => onUpdate(item.id, "dataPublicacao", v)}
               />
               <TableCell>
-                <Select value={item.status} onValueChange={(v) => onUpdate(item.id, "status", v)}>
-                  <SelectTrigger className="border-transparent bg-transparent h-8 p-0">
-                    <Badge className={cn("text-xs font-medium px-2.5 py-0.5", statusClassMap[item.status])}>
-                      {item.status}
-                    </Badge>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUS_OPTIONS.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        <Badge className={cn("text-xs", statusClassMap[s])}>{s}</Badge>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <StatusSelect value={item.status} onChange={(v) => onUpdate(item.id, "status", v)} />
               </TableCell>
               <TableCell>
                 <Textarea
@@ -170,6 +168,32 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+function StatusSelect({ value, onChange }: { value: ContentStatus; onChange: (v: string) => void }) {
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="border-transparent bg-transparent h-8 p-0">
+        <Badge className={cn("text-xs font-medium px-2.5 py-0.5", statusClassMap[value])}>
+          {value}
+        </Badge>
+      </SelectTrigger>
+      <SelectContent className="max-h-[320px]">
+        {STATUS_GROUPS.map((group) => (
+          <SelectGroup key={group.stage}>
+            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {group.stage}
+            </SelectLabel>
+            {group.statuses.map((s) => (
+              <SelectItem key={s} value={s}>
+                <Badge className={cn("text-[10px]", statusClassMap[s])}>{s}</Badge>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
