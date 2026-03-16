@@ -4,8 +4,10 @@ import { AppHeader } from "@/components/AppHeader";
 import { CounterCards } from "@/components/CounterCards";
 import { FilterBar } from "@/components/FilterBar";
 import { ContentTable } from "@/components/ContentTable";
+import { CalendarView } from "@/components/CalendarView";
 import { useContentData } from "@/hooks/useContentData";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Index = () => {
   const { items, addItem, updateItem, deleteItem } = useContentData();
@@ -34,24 +36,37 @@ const Index = () => {
       <AppHeader />
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-6 py-6 space-y-6">
         <CounterCards items={items} />
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <FilterBar
-            search={search}
-            onSearchChange={setSearch}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            formatFilter={formatFilter}
-            onFormatFilterChange={setFormatFilter}
-            responsavelFilter={responsavelFilter}
-            onResponsavelFilterChange={setResponsavelFilter}
-            responsaveis={responsaveis}
-          />
-          <Button onClick={addItem} className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium gap-2">
-            <Plus className="h-4 w-4" />
-            Novo conteúdo
-          </Button>
-        </div>
-        <ContentTable items={filtered} onUpdate={updateItem} onDelete={deleteItem} />
+        <Tabs defaultValue="tabela" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <TabsList>
+                <TabsTrigger value="tabela">Planejamento</TabsTrigger>
+                <TabsTrigger value="calendario">Calendário</TabsTrigger>
+              </TabsList>
+              <FilterBar
+                search={search}
+                onSearchChange={setSearch}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                formatFilter={formatFilter}
+                onFormatFilterChange={setFormatFilter}
+                responsavelFilter={responsavelFilter}
+                onResponsavelFilterChange={setResponsavelFilter}
+                responsaveis={responsaveis}
+              />
+            </div>
+            <Button onClick={addItem} className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium gap-2">
+              <Plus className="h-4 w-4" />
+              Novo conteúdo
+            </Button>
+          </div>
+          <TabsContent value="tabela">
+            <ContentTable items={filtered} onUpdate={updateItem} onDelete={deleteItem} />
+          </TabsContent>
+          <TabsContent value="calendario">
+            <CalendarView items={filtered} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
