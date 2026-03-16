@@ -1,0 +1,206 @@
+import { useState } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ContentItem, ContentStatus, ContentFormat, STATUS_OPTIONS, FORMAT_OPTIONS, statusClassMap, rowIndicatorMap } from "@/types/content";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+type SortField = "dataPublicacao" | "status" | null;
+type SortDir = "asc" | "desc";
+
+interface ContentTableProps {
+  items: ContentItem[];
+  onUpdate: (id: string, field: keyof ContentItem, value: string) => void;
+  onDelete: (id: string) => void;
+}
+
+export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  };
+
+  const sorted = [...items].sort((a, b) => {
+    if (!sortField) return 0;
+    const mod = sortDir === "asc" ? 1 : -1;
+    if (sortField === "dataPublicacao") {
+      return (a.dataPublicacao.localeCompare(b.dataPublicacao)) * mod;
+    }
+    return a.status.localeCompare(b.status) * mod;
+  });
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ChevronUp className="h-3 w-3 opacity-30" />;
+    return sortDir === "asc" ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />;
+  };
+
+  return (
+    <div className="rounded-lg border bg-card overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-primary/5 hover:bg-primary/5">
+            <TableHead className="w-[50px] text-center font-semibold">#</TableHead>
+            <TableHead className="min-w-[180px] font-semibold">Tema</TableHead>
+            <TableHead className="w-[140px] font-semibold">Formato</TableHead>
+            <TableHead className="w-[140px] font-semibold">Responsável</TableHead>
+            <TableHead className="w-[140px] font-semibold">Data Captação</TableHead>
+            <TableHead
+              className="w-[140px] font-semibold cursor-pointer select-none"
+              onClick={() => toggleSort("dataPublicacao")}
+            >
+              <span className="flex items-center gap-1">Data Publicação <SortIcon field="dataPublicacao" /></span>
+            </TableHead>
+            <TableHead
+              className="w-[140px] font-semibold cursor-pointer select-none"
+              onClick={() => toggleSort("status")}
+            >
+              <span className="flex items-center gap-1">Status <SortIcon field="status" /></span>
+            </TableHead>
+            <TableHead className="min-w-[160px] font-semibold">Observações</TableHead>
+            <TableHead className="w-[50px]" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sorted.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
+                Nenhum conteúdo encontrado. Clique em "+ Novo conteúdo" para começar.
+              </TableCell>
+            </TableRow>
+          )}
+          {sorted.map((item) => (
+            <TableRow key={item.id} className={cn("group", rowIndicatorMap[item.status])}>
+              <TableCell className="text-center text-muted-foreground font-mono text-sm">
+                {item.number}
+              </TableCell>
+              <TableCell>
+                <Input
+                  value={item.tema}
+                  onChange={(e) => onUpdate(item.id, "tema", e.target.value)}
+                  placeholder="Digite o tema..."
+                  className="border-transparent bg-transparent hover:bg-secondary/50 focus:bg-card h-8 text-sm"
+                />
+              </TableCell>
+              <TableCell>
+                <Select value={item.formato} onValueChange={(v) => onUpdate(item.id, "formato", v)}>
+                  <SelectTrigger className="border-transparent bg-transparent hover:bg-secondary/50 h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FORMAT_OPTIONS.map((f) => (
+                      <SelectItem key={f} value={f}>{f}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell>
+                <Input
+                  value={item.responsavel}
+                  onChange={(e) => onUpdate(item.id, "responsavel", e.target.value)}
+                  placeholder="Responsável..."
+                  className="border-transparent bg-transparent hover:bg-secondary/50 focus:bg-card h-8 text-sm"
+                />
+              </TableCell>
+              <DatePickerCell
+                value={item.dataCaptacao}
+                onChange={(v) => onUpdate(item.id, "dataCaptacao", v)}
+              />
+              <DatePickerCell
+                value={item.dataPublicacao}
+                onChange={(v) => onUpdate(item.id, "dataPublicacao", v)}
+              />
+              <TableCell>
+                <Select value={item.status} onValueChange={(v) => onUpdate(item.id, "status", v)}>
+                  <SelectTrigger className="border-transparent bg-transparent h-8 p-0">
+                    <Badge className={cn("text-xs font-medium px-2.5 py-0.5", statusClassMap[item.status])}>
+                      {item.status}
+                    </Badge>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        <Badge className={cn("text-xs", statusClassMap[s])}>{s}</Badge>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell>
+                <Textarea
+                  value={item.observacoes}
+                  onChange={(e) => onUpdate(item.id, "observacoes", e.target.value)}
+                  placeholder="Notas..."
+                  className="border-transparent bg-transparent hover:bg-secondary/50 focus:bg-card min-h-[32px] h-8 text-sm resize-none"
+                />
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+                  onClick={() => onDelete(item.id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function DatePickerCell({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const date = value ? new Date(value) : undefined;
+
+  return (
+    <TableCell>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            className={cn(
+              "h-8 w-full justify-start text-sm font-normal px-2",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-1 h-3.5 w-3.5" />
+            {date ? format(date, "dd/MM/yyyy") : "Selecionar"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(d) => d && onChange(d.toISOString())}
+            locale={ptBR}
+            className="p-3 pointer-events-auto"
+          />
+        </PopoverContent>
+      </Popover>
+    </TableCell>
+  );
+}
