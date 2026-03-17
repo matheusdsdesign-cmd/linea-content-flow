@@ -122,7 +122,7 @@ export function KanbanView({ items, onUpdate }: KanbanViewProps) {
                       </span>
                     )}
                   </div>
-                  {item.anexos.length > 0 && (
+                  {(item.anexos?.length || 0) > 0 && (
                     <div className="text-[10px] text-muted-foreground">
                       📎 {item.anexos.length} anexo{item.anexos.length > 1 ? "s" : ""}
                     </div>
