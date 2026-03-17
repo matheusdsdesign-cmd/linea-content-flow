@@ -210,7 +210,7 @@ function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; on
               className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary/50 cursor-pointer text-sm"
             >
               <Checkbox
-                checked={value.includes(p)}
+                checked={safeValue.includes(p)}
                 onCheckedChange={() => toggle(p)}
               />
               {p}
