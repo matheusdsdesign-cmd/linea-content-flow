@@ -255,9 +255,9 @@ function AttachmentCell({
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="h-7 w-7 relative">
           <Paperclip className="h-3.5 w-3.5" />
-          {item.anexos.length > 0 && (
+           {anexos.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              {item.anexos.length}
+              {anexos.length}
             </span>
           )}
         </Button>
@@ -265,10 +265,10 @@ function AttachmentCell({
       <PopoverContent className="w-[260px] p-3" align="start">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-foreground">Roteiros / Anexos</p>
-          {item.anexos.length === 0 && (
+          {anexos.length === 0 && (
             <p className="text-xs text-muted-foreground">Nenhum anexo.</p>
           )}
-          {item.anexos.map((a) => (
+          {anexos.map((a) => (
             <div key={a.path} className="flex items-center gap-2 text-xs">
               <a
                 href={a.url}
