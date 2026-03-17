@@ -180,12 +180,13 @@ export function ContentTable({ items, onUpdate, onDelete, onUpload, onDeleteAtta
 // --- Sub-components ---
 
 function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; onChange: (v: ContentPlatform[]) => void }) {
+  const safeValue = Array.isArray(value) ? value : ["Instagram" as ContentPlatform];
   const toggle = (platform: ContentPlatform) => {
-    if (value.includes(platform)) {
-      if (value.length === 1) return; // keep at least one
-      onChange(value.filter((p) => p !== platform));
+    if (safeValue.includes(platform)) {
+      if (safeValue.length === 1) return;
+      onChange(safeValue.filter((p) => p !== platform));
     } else {
-      onChange([...value, platform]);
+      onChange([...safeValue, platform]);
     }
   };
 
