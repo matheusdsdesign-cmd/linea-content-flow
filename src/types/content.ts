@@ -28,7 +28,7 @@ export type ContentStatus =
 
 export type ContentFormat = "Reels" | "Carrossel" | "Post estático" | "Story" | "Artigo" | "E-mail" | "Vídeo";
 
-export type ContentPlatform = "Instagram" | "Facebook" | "LinkedIn" | "TikTok" | "YouTube" | "Blog" | "E-mail" | "WhatsApp";
+export type ContentPlatform = "Instagram" | "Facebook" | "LinkedIn" | "Blog" | "E-mail";
 
 export interface ContentAttachment {
   name: string;
@@ -70,7 +70,7 @@ export const STATUS_OPTIONS: ContentStatus[] = STATUS_GROUPS.flatMap((g) => g.st
 
 export const FORMAT_OPTIONS: ContentFormat[] = ["Reels", "Carrossel", "Post estático", "Story", "Artigo", "E-mail", "Vídeo"];
 
-export const PLATFORM_OPTIONS: ContentPlatform[] = ["Instagram", "Facebook", "LinkedIn", "TikTok", "YouTube", "Blog", "E-mail", "WhatsApp"];
+export const PLATFORM_OPTIONS: ContentPlatform[] = ["Instagram", "Facebook", "LinkedIn", "Blog", "E-mail"];
 
 // Color mapping by semantic meaning
 type StatusColor = "accent" | "success" | "delayed" | "cancelled" | "info" | "warning";

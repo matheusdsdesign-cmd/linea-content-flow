@@ -1,6 +1,10 @@
 import { Truck } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export function AppHeader() {
+  const location = useLocation();
+
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-primary/80">
       <div className="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
@@ -13,15 +17,28 @@ export function AppHeader() {
           </h1>
         </div>
         <nav className="hidden sm:flex items-center gap-1">
-          <span className="px-3 py-1.5 text-sm font-medium text-primary-foreground/90 bg-primary-foreground/10 rounded-md">
+          <Link
+            to="/"
+            className={cn(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+              location.pathname === "/"
+                ? "text-primary-foreground/90 bg-primary-foreground/10"
+                : "text-primary-foreground/50 hover:text-primary-foreground/70"
+            )}
+          >
             Planejamento
-          </span>
-          <span className="px-3 py-1.5 text-sm text-primary-foreground/50 cursor-default">
-            Calendário
-          </span>
-          <span className="px-3 py-1.5 text-sm text-primary-foreground/50 cursor-default">
+          </Link>
+          <Link
+            to="/relatorios"
+            className={cn(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+              location.pathname === "/relatorios"
+                ? "text-primary-foreground/90 bg-primary-foreground/10"
+                : "text-primary-foreground/50 hover:text-primary-foreground/70"
+            )}
+          >
             Relatórios
-          </span>
+          </Link>
         </nav>
       </div>
     </header>

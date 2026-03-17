@@ -180,10 +180,9 @@ export function ContentTable({ items, onUpdate, onDelete, onUpload, onDeleteAtta
 // --- Sub-components ---
 
 function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; onChange: (v: ContentPlatform[]) => void }) {
-  const safeValue = Array.isArray(value) ? value : ["Instagram" as ContentPlatform];
+  const safeValue = Array.isArray(value) ? value : [];
   const toggle = (platform: ContentPlatform) => {
     if (safeValue.includes(platform)) {
-      if (safeValue.length === 1) return;
       onChange(safeValue.filter((p) => p !== platform));
     } else {
       onChange([...safeValue, platform]);
@@ -195,10 +194,17 @@ function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; on
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="h-8 w-full justify-start text-sm font-normal px-2 border-transparent hover:bg-secondary/50"
+          className={cn(
+            "h-8 w-full justify-start text-sm font-normal px-2 border-transparent hover:bg-secondary/50",
+            safeValue.length === 0 && "text-muted-foreground"
+          )}
         >
           <span className="truncate">
-            {safeValue.length === 1 ? safeValue[0] : `${safeValue.length} plataformas`}
+            {safeValue.length === 0
+              ? "Selecionar..."
+              : safeValue.length === 1
+              ? safeValue[0]
+              : `${safeValue.length} plataformas`}
           </span>
         </Button>
       </PopoverTrigger>
