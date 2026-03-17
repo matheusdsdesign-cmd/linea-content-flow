@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const Index = () => {
   const { items, addItem, updateItem, deleteItem, uploadAttachment, deleteAttachment } = useContentData();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [formatFilter, setFormatFilter] = useState("all");
   const [responsavelFilter, setResponsavelFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
