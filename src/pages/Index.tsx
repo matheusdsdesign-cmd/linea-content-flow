@@ -26,7 +26,7 @@ const Index = () => {
   const filtered = useMemo(() => {
     return items.filter((item) => {
       if (search && !item.tema.toLowerCase().includes(search.toLowerCase()) && !item.observacoes.toLowerCase().includes(search.toLowerCase())) return false;
-      if (statusFilter !== "all" && item.status !== statusFilter) return false;
+      if (statusFilter.length > 0 && !statusFilter.includes(item.status)) return false;
       if (formatFilter !== "all" && item.formato !== formatFilter) return false;
       if (responsavelFilter !== "all" && item.responsavel !== responsavelFilter) return false;
       if (platformFilter !== "all" && !item.plataformas.includes(platformFilter as any)) return false;

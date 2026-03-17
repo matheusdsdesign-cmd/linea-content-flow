@@ -1,15 +1,21 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { STATUS_GROUPS, FORMAT_OPTIONS, PLATFORM_OPTIONS } from "@/types/content";
+import { STATUS_GROUPS, FORMAT_OPTIONS, PLATFORM_OPTIONS, statusClassMap } from "@/types/content";
+import type { ContentStatus } from "@/types/content";
+import { cn } from "@/lib/utils";
 
 interface FilterBarProps {
   search: string;
   onSearchChange: (v: string) => void;
-  statusFilter: string;
-  onStatusFilterChange: (v: string) => void;
+  statusFilter: string[];
+  onStatusFilterChange: (v: string[]) => void;
   formatFilter: string;
   onFormatFilterChange: (v: string) => void;
   responsavelFilter: string;
@@ -27,6 +33,20 @@ export function FilterBar({
   responsaveis,
   platformFilter, onPlatformFilterChange,
 }: FilterBarProps) {
+  const toggleStatus = (status: string) => {
+    if (statusFilter.includes(status)) {
+      onStatusFilterChange(statusFilter.filter((s) => s !== status));
+    } else {
+      onStatusFilterChange([...statusFilter, status]);
+    }
+  };
+
+  const statusLabel = statusFilter.length === 0
+    ? "Todos os status"
+    : statusFilter.length === 1
+    ? statusFilter[0]
+    : `${statusFilter.length} status`;
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="relative flex-1 min-w-[220px]">
@@ -38,22 +58,46 @@ export function FilterBar({
           className="pl-9 bg-card"
         />
       </div>
-      <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-        <SelectTrigger className="w-[180px] bg-card">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent className="max-h-[320px]">
-          <SelectItem value="all">Todos os status</SelectItem>
-          {STATUS_GROUPS.map((group) => (
-            <SelectGroup key={group.stage}>
-              <SelectLabel className="text-xs font-bold uppercase tracking-wider">{group.stage}</SelectLabel>
-              {group.statuses.map((s) => (
-                <SelectItem key={s} value={s}>{s}</SelectItem>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectContent>
-      </Select>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-[200px] justify-between bg-card text-sm font-normal">
+            <span className="truncate">{statusLabel}</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[260px] p-2 max-h-[360px] overflow-y-auto" align="start">
+          <div className="space-y-1">
+            {statusFilter.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-xs text-muted-foreground"
+                onClick={() => onStatusFilterChange([])}
+              >
+                Limpar filtros
+              </Button>
+            )}
+            {STATUS_GROUPS.map((group) => (
+              <div key={group.stage}>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-2 pt-2 pb-1">
+                  {group.stage}
+                </p>
+                {group.statuses.map((s) => (
+                  <label
+                    key={s}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary/50 cursor-pointer text-sm"
+                  >
+                    <Checkbox
+                      checked={statusFilter.includes(s)}
+                      onCheckedChange={() => toggleStatus(s)}
+                    />
+                    <Badge className={cn("text-[10px]", statusClassMap[s as ContentStatus])}>{s}</Badge>
+                  </label>
+                ))}
+              </div>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
       <Select value={formatFilter} onValueChange={onFormatFilterChange}>
         <SelectTrigger className="w-[160px] bg-card">
           <SelectValue placeholder="Formato" />
