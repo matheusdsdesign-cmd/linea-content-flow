@@ -28,7 +28,7 @@ export type ContentStatus =
 
 export type ContentFormat = "Reels" | "Carrossel" | "Post estático" | "Story" | "Artigo" | "E-mail" | "Vídeo";
 
-export type ContentPlatform = "Instagram" | "Facebook" | "LinkedIn" | "TikTok" | "YouTube" | "Blog" | "E-mail" | "WhatsApp";
+export type ContentPlatform = "Instagram" | "Facebook" | "LinkedIn" | "Blog" | "E-mail";
 
 export interface ContentAttachment {
   name: string;
