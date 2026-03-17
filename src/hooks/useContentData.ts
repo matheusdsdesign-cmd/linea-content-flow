@@ -12,7 +12,7 @@ function loadFromStorage(): ContentItem[] {
     const items = JSON.parse(data) as any[];
     return items.map((item) => ({
       ...item,
-      plataformas: item.plataformas || (item.plataforma ? [item.plataforma] : ["Instagram"]),
+      plataformas: (item.plataformas || (item.plataforma ? [item.plataforma] : [])).filter((p: string) => ["Instagram", "Facebook", "LinkedIn", "Blog", "E-mail"].includes(p)),
       anexos: item.anexos || [],
     }));
   } catch {
