@@ -198,7 +198,7 @@ function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; on
           className="h-8 w-full justify-start text-sm font-normal px-2 border-transparent hover:bg-secondary/50"
         >
           <span className="truncate">
-            {value.length === 1 ? value[0] : `${value.length} plataformas`}
+            {safeValue.length === 1 ? safeValue[0] : `${safeValue.length} plataformas`}
           </span>
         </Button>
       </PopoverTrigger>
