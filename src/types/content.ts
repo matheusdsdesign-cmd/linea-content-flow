@@ -30,17 +30,24 @@ export type ContentFormat = "Reels" | "Carrossel" | "Post estático" | "Story" |
 
 export type ContentPlatform = "Instagram" | "Facebook" | "LinkedIn" | "TikTok" | "YouTube" | "Blog" | "E-mail" | "WhatsApp";
 
+export interface ContentAttachment {
+  name: string;
+  url: string;
+  path: string; // storage path for deletion
+}
+
 export interface ContentItem {
   id: string;
   number: number;
   tema: string;
   formato: ContentFormat;
   responsavel: string;
-  plataforma: ContentPlatform;
+  plataformas: ContentPlatform[]; // changed to array
   dataCaptacao: string;
   dataPublicacao: string;
   status: ContentStatus;
   observacoes: string;
+  anexos: ContentAttachment[]; // new field
 }
 
 export interface StatusGroup {
@@ -57,6 +64,8 @@ export const STATUS_GROUPS: StatusGroup[] = [
   { stage: "Extras", statuses: ["Pausado", "Cancelado", "Reprovado", "Reagendado", "Conteúdo reciclado", "Aguardando feedback"] },
 ];
 
+export const STAGE_ORDER: ContentStage[] = ["Ideação", "Pré-produção", "Produção", "Aprovação", "Publicação", "Extras"];
+
 export const STATUS_OPTIONS: ContentStatus[] = STATUS_GROUPS.flatMap((g) => g.statuses);
 
 export const FORMAT_OPTIONS: ContentFormat[] = ["Reels", "Carrossel", "Post estático", "Story", "Artigo", "E-mail", "Vídeo"];
@@ -67,23 +76,17 @@ export const PLATFORM_OPTIONS: ContentPlatform[] = ["Instagram", "Facebook", "Li
 type StatusColor = "accent" | "success" | "delayed" | "cancelled" | "info" | "warning";
 
 const statusColorMap: Record<ContentStatus, StatusColor> = {
-  // Ideação — info (blue-ish primary)
   "Pauta definida": "info",
-  // Pré-produção — info
   "Roteiro criado": "info",
-  // Produção — accent (orange, in progress)
   "Gravação concluída": "accent",
   "Imagens captadas": "accent",
   "Arte produzida": "accent",
-  // Aprovação — warning/delayed
   "Aguardando aprovação": "warning",
   "Aprovado": "success",
   "Em ajustes": "warning",
-  // Publicação
   "Pronto para publicação": "success",
   "Agendado": "info",
   "Publicado": "success",
-  // Extras
   "Pausado": "delayed",
   "Cancelado": "cancelled",
   "Reprovado": "cancelled",
@@ -99,3 +102,19 @@ export const statusClassMap: Record<ContentStatus, string> = Object.fromEntries(
 export const rowIndicatorMap: Record<ContentStatus, string> = Object.fromEntries(
   STATUS_OPTIONS.map((s) => [s, `row-indicator-${statusColorMap[s]}`])
 ) as Record<ContentStatus, string>;
+
+export function getStageForStatus(status: ContentStatus): ContentStage {
+  for (const group of STATUS_GROUPS) {
+    if (group.statuses.includes(status)) return group.stage;
+  }
+  return "Extras";
+}
+
+export const STAGE_COLORS: Record<ContentStage, string> = {
+  "Ideação": "info",
+  "Pré-produção": "info",
+  "Produção": "accent",
+  "Aprovação": "warning",
+  "Publicação": "success",
+  "Extras": "delayed",
+};

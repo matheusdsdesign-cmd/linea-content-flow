@@ -45,7 +45,6 @@ export function CalendarView({ items }: CalendarViewProps) {
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b bg-primary/5">
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <ChevronLeft className="h-4 w-4" />
@@ -58,7 +57,6 @@ export function CalendarView({ items }: CalendarViewProps) {
         </Button>
       </div>
 
-      {/* Week day headers */}
       <div className="grid grid-cols-7 border-b">
         {weekDays.map((d) => (
           <div key={d} className="py-2 text-center text-xs font-medium text-muted-foreground">
@@ -67,7 +65,6 @@ export function CalendarView({ items }: CalendarViewProps) {
         ))}
       </div>
 
-      {/* Days grid */}
       <div className="grid grid-cols-7">
         {days.map((day, i) => {
           const key = format(day, "yyyy-MM-dd");
@@ -108,7 +105,9 @@ export function CalendarView({ items }: CalendarViewProps) {
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[200px]">
                       <p className="font-medium text-xs">{item.tema || "Sem tema"}</p>
-                      <p className="text-xs text-muted-foreground">{item.formato} · {item.responsavel || "Sem responsável"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.formato} · {item.plataformas.join(", ")}
+                      </p>
                       <Badge className={cn("text-[10px] mt-1", statusClassMap[item.status])}>{item.status}</Badge>
                     </TooltipContent>
                   </Tooltip>
