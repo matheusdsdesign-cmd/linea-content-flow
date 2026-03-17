@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { CalendarIcon, Trash2, ChevronUp, ChevronDown, Paperclip, X, Upload, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   ContentItem, ContentStatus, ContentFormat, ContentPlatform,
@@ -11,23 +11,27 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 type SortField = "dataPublicacao" | "status" | null;
 type SortDir = "asc" | "desc";
 
 interface ContentTableProps {
   items: ContentItem[];
-  onUpdate: (id: string, field: keyof ContentItem, value: string) => void;
+  onUpdate: (id: string, field: keyof ContentItem, value: any) => void;
   onDelete: (id: string) => void;
+  onUpload: (itemId: string, file: File) => Promise<any>;
+  onDeleteAttachment: (itemId: string, path: string) => Promise<void>;
 }
 
-export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
+export function ContentTable({ items, onUpdate, onDelete, onUpload, onDeleteAttachment }: ContentTableProps) {
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
@@ -62,7 +66,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
             <TableHead className="w-[50px] text-center font-semibold">#</TableHead>
             <TableHead className="min-w-[180px] font-semibold">Tema</TableHead>
             <TableHead className="w-[140px] font-semibold">Formato</TableHead>
-            <TableHead className="w-[130px] font-semibold">Plataforma</TableHead>
+            <TableHead className="w-[160px] font-semibold">Plataformas</TableHead>
             <TableHead className="w-[140px] font-semibold">Responsável</TableHead>
             <TableHead className="w-[140px] font-semibold">Data Captação</TableHead>
             <TableHead
@@ -77,6 +81,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
             >
               <span className="flex items-center gap-1">Status <SortIcon field="status" /></span>
             </TableHead>
+            <TableHead className="w-[80px] font-semibold">Anexos</TableHead>
             <TableHead className="min-w-[160px] font-semibold">Observações</TableHead>
             <TableHead className="w-[50px]" />
           </TableRow>
@@ -84,7 +89,7 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
         <TableBody>
           {sorted.length === 0 && (
             <TableRow>
-              <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
+              <TableCell colSpan={11} className="text-center py-12 text-muted-foreground">
                 Nenhum conteúdo encontrado. Clique em "+ Novo conteúdo" para começar.
               </TableCell>
             </TableRow>
@@ -115,16 +120,10 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
                 </Select>
               </TableCell>
               <TableCell>
-                <Select value={item.plataforma} onValueChange={(v) => onUpdate(item.id, "plataforma", v)}>
-                  <SelectTrigger className="border-transparent bg-transparent hover:bg-secondary/50 h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PLATFORM_OPTIONS.map((p) => (
-                      <SelectItem key={p} value={p}>{p}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <PlatformMultiSelect
+                  value={item.plataformas}
+                  onChange={(v) => onUpdate(item.id, "plataformas", v)}
+                />
               </TableCell>
               <TableCell>
                 <Input
@@ -144,6 +143,13 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
               />
               <TableCell>
                 <StatusSelect value={item.status} onChange={(v) => onUpdate(item.id, "status", v)} />
+              </TableCell>
+              <TableCell>
+                <AttachmentCell
+                  item={item}
+                  onUpload={onUpload}
+                  onDeleteAttachment={onDeleteAttachment}
+                />
               </TableCell>
               <TableCell>
                 <Textarea
@@ -168,6 +174,138 @@ export function ContentTable({ items, onUpdate, onDelete }: ContentTableProps) {
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+// --- Sub-components ---
+
+function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; onChange: (v: ContentPlatform[]) => void }) {
+  const toggle = (platform: ContentPlatform) => {
+    if (value.includes(platform)) {
+      if (value.length === 1) return; // keep at least one
+      onChange(value.filter((p) => p !== platform));
+    } else {
+      onChange([...value, platform]);
+    }
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          className="h-8 w-full justify-start text-sm font-normal px-2 border-transparent hover:bg-secondary/50"
+        >
+          <span className="truncate">
+            {value.length === 1 ? value[0] : `${value.length} plataformas`}
+          </span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-2" align="start">
+        <div className="space-y-1">
+          {PLATFORM_OPTIONS.map((p) => (
+            <label
+              key={p}
+              className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary/50 cursor-pointer text-sm"
+            >
+              <Checkbox
+                checked={value.includes(p)}
+                onCheckedChange={() => toggle(p)}
+              />
+              {p}
+            </label>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function AttachmentCell({
+  item,
+  onUpload,
+  onDeleteAttachment,
+}: {
+  item: ContentItem;
+  onUpload: (itemId: string, file: File) => Promise<any>;
+  onDeleteAttachment: (itemId: string, path: string) => Promise<void>;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      await onUpload(item.id, file);
+      toast.success("Arquivo anexado!");
+    } catch {
+      toast.error("Erro ao enviar arquivo.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-7 w-7 relative">
+          <Paperclip className="h-3.5 w-3.5" />
+          {item.anexos.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+              {item.anexos.length}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[260px] p-3" align="start">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-foreground">Roteiros / Anexos</p>
+          {item.anexos.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nenhum anexo.</p>
+          )}
+          {item.anexos.map((a) => (
+            <div key={a.path} className="flex items-center gap-2 text-xs">
+              <a
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 truncate text-primary hover:underline flex items-center gap-1"
+              >
+                <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                {a.name}
+              </a>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 text-muted-foreground hover:text-destructive"
+                onClick={() => onDeleteAttachment(item.id, a.path)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+          <input
+            ref={fileRef}
+            type="file"
+            className="hidden"
+            onChange={handleUpload}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs gap-1"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload className="h-3 w-3" />
+            {uploading ? "Enviando..." : "Anexar arquivo"}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

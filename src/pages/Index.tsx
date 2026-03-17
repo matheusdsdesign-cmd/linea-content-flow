@@ -5,12 +5,13 @@ import { CounterCards } from "@/components/CounterCards";
 import { FilterBar } from "@/components/FilterBar";
 import { ContentTable } from "@/components/ContentTable";
 import { CalendarView } from "@/components/CalendarView";
+import { KanbanView } from "@/components/KanbanView";
 import { useContentData } from "@/hooks/useContentData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Index = () => {
-  const { items, addItem, updateItem, deleteItem } = useContentData();
+  const { items, addItem, updateItem, deleteItem, uploadAttachment, deleteAttachment } = useContentData();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [formatFilter, setFormatFilter] = useState("all");
@@ -28,7 +29,7 @@ const Index = () => {
       if (statusFilter !== "all" && item.status !== statusFilter) return false;
       if (formatFilter !== "all" && item.formato !== formatFilter) return false;
       if (responsavelFilter !== "all" && item.responsavel !== responsavelFilter) return false;
-      if (platformFilter !== "all" && item.plataforma !== platformFilter) return false;
+      if (platformFilter !== "all" && !item.plataformas.includes(platformFilter as any)) return false;
       return true;
     });
   }, [items, search, statusFilter, formatFilter, responsavelFilter, platformFilter]);
@@ -43,6 +44,7 @@ const Index = () => {
             <div className="flex items-center gap-4">
               <TabsList>
                 <TabsTrigger value="tabela">Planejamento</TabsTrigger>
+                <TabsTrigger value="kanban">Kanban</TabsTrigger>
                 <TabsTrigger value="calendario">Calendário</TabsTrigger>
               </TabsList>
               <FilterBar
@@ -65,7 +67,16 @@ const Index = () => {
             </Button>
           </div>
           <TabsContent value="tabela">
-            <ContentTable items={filtered} onUpdate={updateItem} onDelete={deleteItem} />
+            <ContentTable
+              items={filtered}
+              onUpdate={updateItem}
+              onDelete={deleteItem}
+              onUpload={uploadAttachment}
+              onDeleteAttachment={deleteAttachment}
+            />
+          </TabsContent>
+          <TabsContent value="kanban">
+            <KanbanView items={filtered} onUpdate={updateItem} />
           </TabsContent>
           <TabsContent value="calendario">
             <CalendarView items={filtered} />
