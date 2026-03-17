@@ -39,7 +39,7 @@ export function useContentData() {
       tema: "",
       formato: "Post estático",
       responsavel: "",
-      plataformas: ["Instagram"],
+      plataformas: [],
       dataCaptacao: "",
       dataPublicacao: "",
       status: "Pauta definida",
