@@ -231,6 +231,7 @@ function AttachmentCell({
   onUpload: (itemId: string, file: File) => Promise<any>;
   onDeleteAttachment: (itemId: string, path: string) => Promise<void>;
 }) {
+  const anexos = item.anexos || [];
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
