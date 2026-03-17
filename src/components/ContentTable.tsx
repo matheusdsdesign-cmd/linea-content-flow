@@ -180,12 +180,13 @@ export function ContentTable({ items, onUpdate, onDelete, onUpload, onDeleteAtta
 // --- Sub-components ---
 
 function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; onChange: (v: ContentPlatform[]) => void }) {
+  const safeValue = Array.isArray(value) ? value : ["Instagram" as ContentPlatform];
   const toggle = (platform: ContentPlatform) => {
-    if (value.includes(platform)) {
-      if (value.length === 1) return; // keep at least one
-      onChange(value.filter((p) => p !== platform));
+    if (safeValue.includes(platform)) {
+      if (safeValue.length === 1) return;
+      onChange(safeValue.filter((p) => p !== platform));
     } else {
-      onChange([...value, platform]);
+      onChange([...safeValue, platform]);
     }
   };
 
@@ -197,7 +198,7 @@ function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; on
           className="h-8 w-full justify-start text-sm font-normal px-2 border-transparent hover:bg-secondary/50"
         >
           <span className="truncate">
-            {value.length === 1 ? value[0] : `${value.length} plataformas`}
+            {safeValue.length === 1 ? safeValue[0] : `${safeValue.length} plataformas`}
           </span>
         </Button>
       </PopoverTrigger>
@@ -209,7 +210,7 @@ function PlatformMultiSelect({ value, onChange }: { value: ContentPlatform[]; on
               className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary/50 cursor-pointer text-sm"
             >
               <Checkbox
-                checked={value.includes(p)}
+                checked={safeValue.includes(p)}
                 onCheckedChange={() => toggle(p)}
               />
               {p}
@@ -230,6 +231,7 @@ function AttachmentCell({
   onUpload: (itemId: string, file: File) => Promise<any>;
   onDeleteAttachment: (itemId: string, path: string) => Promise<void>;
 }) {
+  const anexos = item.anexos || [];
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -253,9 +255,9 @@ function AttachmentCell({
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="h-7 w-7 relative">
           <Paperclip className="h-3.5 w-3.5" />
-          {item.anexos.length > 0 && (
+           {anexos.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              {item.anexos.length}
+              {anexos.length}
             </span>
           )}
         </Button>
@@ -263,10 +265,10 @@ function AttachmentCell({
       <PopoverContent className="w-[260px] p-3" align="start">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-foreground">Roteiros / Anexos</p>
-          {item.anexos.length === 0 && (
+          {anexos.length === 0 && (
             <p className="text-xs text-muted-foreground">Nenhum anexo.</p>
           )}
-          {item.anexos.map((a) => (
+          {anexos.map((a) => (
             <div key={a.path} className="flex items-center gap-2 text-xs">
               <a
                 href={a.url}
