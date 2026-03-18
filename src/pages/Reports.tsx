@@ -129,9 +129,7 @@ const Reports = () => {
   const responsavelCounts = useMemo(() => countBy(items, (i) => i.responsavel), [items]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <AppHeader />
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-6 py-6 space-y-6">
+    <Layout search="" onSearchChange={() => {}}>
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-foreground">Relatórios</h2>
