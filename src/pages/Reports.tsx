@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AppHeader } from "@/components/AppHeader";
+import { Layout } from "@/components/layout/Layout";
 import { useContentData } from "@/hooks/useContentData";
 import { PLATFORM_OPTIONS, FORMAT_OPTIONS, STATUS_OPTIONS, ContentItem } from "@/types/content";
 import { Card } from "@/components/ui/card";
