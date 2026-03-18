@@ -114,8 +114,8 @@ export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () =>
     <>
       <div className="fixed inset-0 z-50 bg-black/50" onClick={onClose} />
       <aside
-        className="fixed left-0 top-0 bottom-0 z-50 w-[260px] flex flex-col animate-slide-in-right border-r border-[rgba(255,255,255,0.08)]"
-        style={{ backgroundColor: "hsl(var(--primary))", animationDirection: "normal", transform: "translateX(0)" }}
+        className="fixed left-0 top-0 bottom-0 z-50 w-[260px] flex flex-col animate-slide-in-left border-r border-[rgba(255,255,255,0.08)]"
+        style={{ backgroundColor: "hsl(var(--primary))" }}
       >
         <div className="flex items-center justify-between px-4 h-14 border-b border-[rgba(255,255,255,0.08)]">
           <div className="flex items-center gap-3">
