@@ -17,28 +17,24 @@ export function AppHeader() {
           </h1>
         </div>
         <nav className="hidden sm:flex items-center gap-1">
-          <Link
-            to="/"
-            className={cn(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-              location.pathname === "/"
-                ? "text-primary-foreground/90 bg-primary-foreground/10"
-                : "text-primary-foreground/50 hover:text-primary-foreground/70"
-            )}
-          >
-            Planejamento
-          </Link>
-          <Link
-            to="/relatorios"
-            className={cn(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-              location.pathname === "/relatorios"
-                ? "text-primary-foreground/90 bg-primary-foreground/10"
-                : "text-primary-foreground/50 hover:text-primary-foreground/70"
-            )}
-          >
-            Relatórios
-          </Link>
+          {[
+            { to: "/", label: "Planejamento" },
+            { to: "/mail-marketing", label: "Mail Marketing" },
+            { to: "/relatorios", label: "Relatórios" },
+          ].map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                location.pathname === link.to
+                  ? "text-primary-foreground/90 bg-primary-foreground/10"
+                  : "text-primary-foreground/50 hover:text-primary-foreground/70"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
       </div>
     </header>
