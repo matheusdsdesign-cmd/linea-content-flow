@@ -239,9 +239,7 @@ export default function MailMarketing() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <AppHeader />
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-6 py-6 space-y-6">
+    <Layout search={search} onSearchChange={setSearch}>
         <KpiCards campaigns={campaigns} />
 
         {/* Filters */}
