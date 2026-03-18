@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Plus, Mail, Send, Calendar, BarChart3, Trash2, Search } from "lucide-react";
-import { AppHeader } from "@/components/AppHeader";
+import { Layout } from "@/components/layout/Layout";
 import { useMailCampaigns } from "@/hooks/useMailCampaigns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
