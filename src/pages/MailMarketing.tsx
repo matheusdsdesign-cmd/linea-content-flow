@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Plus, Mail, Send, Calendar, BarChart3, Trash2, Search } from "lucide-react";
-import { AppHeader } from "@/components/AppHeader";
+import { Layout } from "@/components/layout/Layout";
 import { useMailCampaigns } from "@/hooks/useMailCampaigns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -239,9 +239,7 @@ export default function MailMarketing() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <AppHeader />
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-6 py-6 space-y-6">
+    <Layout search={search} onSearchChange={setSearch}>
         <KpiCards campaigns={campaigns} />
 
         {/* Filters */}
@@ -460,7 +458,6 @@ export default function MailMarketing() {
             </TableBody>
           </Table>
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }
