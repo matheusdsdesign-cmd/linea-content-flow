@@ -226,8 +226,7 @@ const Reports = () => {
             color="bg-accent"
           />
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 };
 

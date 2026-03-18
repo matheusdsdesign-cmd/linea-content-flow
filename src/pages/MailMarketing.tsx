@@ -458,7 +458,6 @@ export default function MailMarketing() {
             </TableBody>
           </Table>
         </div>
-      </main>
-    </div>
+    </Layout>
   );
 }
